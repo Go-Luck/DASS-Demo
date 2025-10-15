@@ -57,6 +57,7 @@ mkdir -p /usr/local/nginx/html/stream/hls
 7. Modify nginx.conf
 
 Find IP address of nginx server.
+
 Use its IP address as the 'server_name' in the 'nginx.conf' file in 'nginx' folder.
 Substitue that file for 'nginx.conf' in '/usr/local/nginx/conf' directory.
 
