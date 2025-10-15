@@ -9,50 +9,50 @@ We base our experiment environment on Ubuntu 24.04 LTS and highly recommend that
 
 1. Update and install libs.
 
-'''shell
+```shell
 sudo apt update
 sudo apt upgrade -y 
 
 sudo apt install -y build-essential libpcre3 libpcre3-dev libssl-dev zlib1g zlib1g-dev unzip
-'''
+```
 
 2. Change the current directory and use sudo access.
 
-'''shell
+```shell
 cd /usr/local/src 
 su 
-'''
+```
 
 3. Download nginx-rtmp module and all dependencies for nginx-1.27.4
 
-'''shell
+```shell
 wget https://nginx.org/download/nginx-1.27.4.tar.gz  
 wget https://github.com/arut/nginx-rtmp-module/archive/master.zip
-'''
+```
 
 4. Unzip downloaded files
 
-'''shell
+```shell
 tar -zxvf nginx-1.27.4.tar.gz 
 unzip master.zip
-'''
+```
 
 5. Compile nginx with rtmp module
 
-'''shell
+```shell
 cd nginx-1.27.4 
 
 ./configure --add-module=../nginx-rtmp-module-master --with-http_ssl_module 
 
 make 
 make install
-'''
+```
 
 6. Make directory for streaming
 
-'''shell
+```shell
 mkdir -p /usr/local/nginx/html/stream/hls
-'''
+```
 
 7. Modify nginx.conf
 
@@ -62,12 +62,10 @@ Find IP address of nginx server and use it as the 'server_name' in the 'nginx.co
 
 We used ffmpeg version 6.1.1. and highly recommend that you do the same.
 
-'''shell
+```shell
 sudo apt update
 sudo apt install ffmpeg
-'''
-
-
+```
 
 ## Install DASS-Demo/mediaServer
 
@@ -84,7 +82,7 @@ sudo apt install ffmpeg
 ## Contact
 This page and files are still updating.
 
-Jihoon Lee, Korea University, 
+Jihoon Lee, Korea University, lim921211@korea.ac.kr
 
 Goeun Park, Korea University, gopark@korea.ac.kr
 
