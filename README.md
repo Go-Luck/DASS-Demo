@@ -89,7 +89,7 @@ sudo apt install ffmpeg
 ## Contact
 This page and files are still updating.
 
-Jihoon Lee, Korea University, lim921211@korea.ac.kr
+Jihoon Lim, Korea University, lim921211@korea.ac.kr
 
 Goeun Park, Korea University, gopark@korea.ac.kr
 
