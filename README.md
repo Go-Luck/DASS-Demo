@@ -1,5 +1,9 @@
 # DASS-Demo
 
+<p align="center">
+<img src="DASS-Demo.jpg" alt="DASS-Demo Overview" width="800">
+
+
 ## OS and software preparation
 
 We base our experiment environment on Ubuntu 24.04 LTS and highly recommend that you do the same. This streamlines the setup process and avoids unexpected issues cause by incompatible software versions etc. Please make sure that you have Python installed. Also make sure that you have root or sudo permission.
