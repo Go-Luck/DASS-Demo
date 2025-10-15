@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>EWMA_CleanDASS</title>
+    <link rel="stylesheet" href="customstyle1.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/onnxruntime-web/dist/ort.min.js"></script>
+  </head>
+
+  <body>
+    <script src="../dist/hls.js?v=20251009v12"></script>
+    <script>
+      if (typeof Hls === 'undefined') {
+        document.write('<script src="https://cdn.jsdelivr.net/npm/hls.js@1.4.12/dist/hls.min.js"><\/script>');
+        console.warn('/dist/hls.js not loaded, using CDN fallback');
+      }
+    </script>
+
+    <div class="container">
+      <div class="title-section">
+        <h1>CleanDASS Demo with EWMA Estimation</h1>
+        <div class="input-group">
+          <input
+            type="text"
+            id="sourceUrl"
+            placeholder="Enter .m3u8 stream URL"
+            value="https://192.168.206.129/output_violence/main/master.m3u8"
+            size="60"
+          />
+          <button id="loadStreamBtn">Load Stream</button>
+          <button id="clearStreamBtn">Clear</button>
+        </div>
+      </div>
+      
+      <div class="top-section">
+        <div class="video-container">
+          <video id="video" controls autoplay muted crossorigin="anonymous"></video>
+        </div>
+
+        <div class="info-panel">
+          <div class="info-section">
+            <h3>Current Display Chunk Info</h3>
+            <p>Quality Level: <span id="currentLevelDisplay" class="stat-value">-</span></p>
+            <p>Risk Type: <span id="semanticTypeDisplay" class="stat-value">-</span></p>
+            <p>Risk Level: <span id="semanticLevelDisplay" class="stat-value">-</span></p>
+            <p>Risk Status: <span id="semanticLabelText" class="label">-</span></p>
+            <p>Risk Type: <span id="semanticTypeText" class="label">-</span></p>
+            <p>Privacy Status: <span id="privacyProtection" class="label">-</span></p>
+            <p>EWMA Bandwidth: <span id="ewmaBwDisplay" class="stat-value">-</span></p>
+            <p>Chunk File: <span id="chunkFileDisplay" class="stat-value">-</span></p>
+            <!-- Hidden but required elements for error prevention -->
+            <span id="dnnBwDisplay" style="display:none;">-</span>
+          </div>
+
+          <div class="info-section">
+            <h3>Statistics</h3>
+            <p><input type="checkbox" id="bitrateDownloadingCheck" checked> Loaded Bitrate: <span id="loadedBitrate" class="stat-value">0 kbps</span></p>
+            <p><input type="checkbox" id="ewmaBandwidthCheck" checked> EWMA Bandwidth: <span id="ewmaBandwidthChart" class="stat-value">0 kbps</span></p>
+            <!-- Hidden but required elements for error prevention -->
+            <span id="dnnBandwidthChart" style="display:none;">0 kbps</span>
+          </div>
+
+          <div class="info-section">
+            <h3>Evaluation</h3>
+            <p>Network Load: <span id="networkLoadDisplay" class="stat-value">-</span></p>
+            <p>Average Network Load: <span id="averageNetworkLoadDisplay" class="stat-value">-</span></p>
+            <p>Delay: <span id="delayDisplay" class="stat-value">-</span></p>
+            <p>Average Delay: <span id="averageDelayDisplay" class="stat-value">-</span></p>
+          </div>
+
+        </div>
+      </div>
+
+      <div class="bottom-section">
+        <div class="charts-container">
+          <div class="chart-box">
+            <div class="chart-header">
+              <div class="chart-title-section">
+                <h3 class="chart-title">Real-time Video Metrics</h3>
+                <div class="chart-title-underline"></div>
+              </div>
+              <div class="chart-controls">
+                <button id="clearChartsBtn" class="chart-btn">Clear</button>
+                <button id="disableChartsBtn" class="chart-btn">Disable</button>
+              </div>
+            </div>
+            <div class="chart-legend-area" id="chartLegend"></div>
+            <div class="chart-content">
+              <div class="chart-canvas-container">
+                <canvas id="metricsChart"></canvas>
+              </div>
+              <div class="chart-y-labels" id="chartLabels"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/ewma-bandwidth-estimation.js?v=20250930v1"></script>
+    <script src="js/ewma-hls-manager.js?v=20251009v5"></script>
+    <script src="js/ewma-metrics-manager.js?v=20251009v2"></script>
+    <script src="js/ewma-app-manager.js?v=20250930v1"></script>
+    <script src="js/chart-manager.js?v=20250930v1"></script>
+    <script src="js/ui-manager.js?v=20250930v1"></script>
+    
+    <script>
+      // ✅ CLEAN SETUP: No semantic handlers in HTML - HLS-Manager handles everything
+      
+      // Checkbox handler - simplified for CleanDASS
+      window.globalCheckboxHandler = function(event) {
+        const checkbox = event.target;
+        
+        // No checkbox limit for clean version
+        if (window.chartManager && window.chartManager.updateChart) {
+          try {
+            window.chartManager.updateChart();
+          } catch (error) {
+            console.log('Chart update failed:', error);
+          }
+        }
+        
+        return true;
+      };
+      
+      function setupCheckboxListeners() {
+        const checkboxes = document.querySelectorAll('input[type="checkbox"]');
+        checkboxes.forEach(checkbox => {
+          checkbox.removeEventListener('change', window.globalCheckboxHandler);
+          checkbox.addEventListener('change', window.globalCheckboxHandler);
+        });
+      }
+      
+      setupCheckboxListeners();
+      
+      document.addEventListener('DOMContentLoaded', function() {
+        setupCheckboxListeners();
+      });
+      
+      window.addEventListener('load', function() {
+        setupCheckboxListeners();
+        
+        setTimeout(function() {
+          if (window.chartManager) {
+            window.chartManager.setupCheckboxListeners();
+          }
+        }, 200);
+     
+
+      console.log('HLS version:', Hls.version); });
+    </script>
+  </body>
+</html>
