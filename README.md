@@ -6,7 +6,7 @@
 
 ## OS and software preparation
 
-We base our experiment environment on Ubuntu 24.04 LTS and highly recommend that you do the same. This streamlines the setup process and avoids unexpected issues cause by incompatible software versions etc. Please make sure that you have Python installed. Also make sure that you have root or sudo permission.
+We base our experimental environment on Ubuntu 24.04 LTS and highly recommend that you do the same. This streamlines the setup process and avoids unexpected issues caused by incompatible software versions etc. Please ensure that you have Python installed. Also make sure that you have root or sudo permission.
 
 
 ## Install Nginx and FFmpeg
