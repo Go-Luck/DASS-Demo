@@ -20,7 +20,7 @@ sudo apt upgrade -y
 sudo apt install -y build-essential libpcre3 libpcre3-dev libssl-dev zlib1g zlib1g-dev unzip
 ```
 
-2. Change the current directory and use sudo access.
+2. Change the current directory and use root access.
 
 ```shell
 cd /usr/local/src 
@@ -67,12 +67,12 @@ Substitue that file for 'nginx.conf' in '/usr/local/nginx/conf' directory.
 
 8. Install FFmpeg
 
-We used ffmpeg version 6.1.1. and highly recommend that you do the same.
-
 ```shell
 sudo apt update
 sudo apt install ffmpeg
 ```
+
+We used ffmpeg version 6.1.1. and highly recommend that you do the same.
 
 ## Install DASS-Demo/mediaServer
 
@@ -83,8 +83,38 @@ sudo apt install ffmpeg
 ## Setting DASS-Demo environment
 
 
-## Running DASS-Demo
+## Running DASS-Demo with injected network trace
 
+1. Run each nginx server in root access
+
+```shell
+su
+
+/usr/local/nginx/sbin/nginx
+```
+
+2. Install Chrome Debugging Protocol interface for surveillanvce server
+
+```shell
+npm install chrome-remote-interface
+```
+
+3. Open Chrome tab for debugging in surveillanvce server
+
+```shell
+& "C:\Program Files\Google\Chrome\Application\chrome.exe" --remote-debugging-port=9222 --disable-popup-blocking --ignore-certificate-errors --user-data-dir="C:\temp\chrome-debug-new"
+```
+
+4. At debugging Chrome tab, move to surveillanvce server demo page by URL
+
+Surveillance server demo page URL : http://{serverIP}/hls.js/demo/DASS-Demo.html
+
+5. Inject network trace
+
+```shell
+wsl bash -c "cd /{runTrace.js Directory} && node runTrace.js"
+```
+Running file will automatically refresh the page with injected network trace.
 
 ## Contact
 This page and files are still updating.
