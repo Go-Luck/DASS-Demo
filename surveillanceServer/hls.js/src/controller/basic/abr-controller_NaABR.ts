@@ -4,15 +4,12 @@ import { PlaylistLevelType } from '../types/loader';
 import type Hls from '../hls';
 import type { AbrComponentAPI } from '../types/component-api';
 import type { FragBufferedData } from '../types/events';
-import type { Fragment } from '../loader/fragment';
+import type { Level } from '../types/level';
 
 class AbrController implements AbrComponentAPI {
   private hls: Hls;
   public bwEstimator: EwmaBandWidthEstimator;
   private currentEstimate: number = 0;
-
-  // nextSemanticLevel 활용
-  private nextSemanticLevel: number | null = null;
 
   constructor(hls: Hls) {
     this.hls = hls;
@@ -42,49 +39,42 @@ class AbrController implements AbrComponentAPI {
 
     this.bwEstimator.sample(downloadTime, stats.loaded);
     this.currentEstimate = this.bwEstimator.getEstimate();
-
-    // 다음 청크의 SemanticLevel 저장
-    this.nextSemanticLevel =
-      typeof frag.nextSemanticLevel === 'number'
-        ? frag.nextSemanticLevel
-        : null;
   }
 
   get nextAutoLevel(): number {
-    const levels = this.hls.levels;
+    const allLevels = this.hls.levels;
     const bw = this.bwEstimator.canEstimate()
       ? this.currentEstimate
       : this.hls.config.abrEwmaDefaultEstimate;
 
-    const nextSemanticLevel = this.nextSemanticLevel;
-
-    // 룰 넣기
-    if (typeof nextSemanticLevel === 'number') {
-      if (nextSemanticLevel === 0) {
-        return 0;
+    // 전체 레벨 목록에서 이름에 '_privacy'가 포함되지 않은(clear) 것들만 선택
+    const clearLevelIndices: number[] = [];
+    allLevels.forEach((level, index) => {
+      if (!level.name?.includes('_privacy')) {
+        clearLevelIndices.push(index);
       }
+    });
 
-      const maxLevelIndex = nextSemanticLevel; // 예: 1이면 0~1, 2면 0~2
+    const indicesToSearch =
+      clearLevelIndices.length > 0
+        ? clearLevelIndices
+        : allLevels.map((_, index) => index);
 
-      for (let i = maxLevelIndex; i >= 0; i--) {
-        const bitrate = levels[i].maxBitrate || levels[i].bitrate;
-        if (bitrate <= bw) {
-          return i;
-        }
-      }
-
-      return 0; // fallback
+    if (indicesToSearch.length === 0) {
+      return 0;
     }
 
-    // 기본 ABR 로직 (semanticLevel 정보 없을 경우)
-    for (let i = levels.length - 1; i >= 0; i--) {
-      const bitrate = levels[i].maxBitrate || levels[i].bitrate;
+    // 선택된 clear 스트림 목록 안에서만 표준 ABR 로직을 수행
+    for (let i = indicesToSearch.length - 1; i >= 0; i--) {
+      const levelIndex = indicesToSearch[i];
+      const level = allLevels[levelIndex];
+      const bitrate = level.maxBitrate || level.bitrate;
       if (bitrate <= bw) {
-        return i;
+        return levelIndex;
       }
     }
 
-    return 0;
+    return indicesToSearch[0];
   }
 
   set nextAutoLevel(_: number) {}
@@ -94,7 +84,13 @@ class AbrController implements AbrComponentAPI {
   }
 
   get firstAutoLevel(): number {
-    return 0;
+    if (!this.hls.levels || this.hls.levels.length === 0) {
+      return 0;
+    }
+    const firstClearIndex = this.hls.levels.findIndex(
+      (level) => !level.name?.includes('_privacy'),
+    );
+    return firstClearIndex !== -1 ? firstClearIndex : 0;
   }
 
   destroy() {
